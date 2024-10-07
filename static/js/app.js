@@ -1,3 +1,4 @@
+//Logging key parameters to console for visibility
 d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
   console.log(data);
   let metadata = data.metadata
@@ -63,7 +64,16 @@ function buildCharts(sample) {
     };
 
     let layout_bubble = {
-
+      title: 'Bacteria Cutures Per Sample',
+      xaxis: {
+        title: 'OTU ID' // Label for the x-axis
+      },
+    yaxis: {
+        title: 'Number of Bacteria' // Label for the y-axis
+      },
+      showlegend: false,
+      height: 600,
+      width: 600
     };
 
     let data = [trace1];
@@ -88,10 +98,10 @@ function init() {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // Get the names field
-
+    let names = data.names;
 
     // Use d3 to select the dropdown with id of `#selDataset`
-
+    let dropdown = d3.select('#selDataset');
 
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
