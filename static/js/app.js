@@ -4,14 +4,15 @@ d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").th
   let metadata = data.metadata
   console.log(metadata);
 
-  let desiredata = metadata.find(mt => mt.id == 949 )
-  console.log(desiredata);
+  // let desiredata = metadata.find(mt => mt.id == 949 )
+  // console.log(desiredata);
 });
 
+let url = "https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json"
 
 // Build the metadata panel
 function buildMetadata(sample) {
-  d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
+  d3.json(url).then((data) => {
 
     // get the metadata field
     let metadata = data.metadata;
@@ -28,9 +29,7 @@ function buildMetadata(sample) {
     // Inside a loop, you will need to use d3 to append new
     // tags for each key-value in the filtered metadata.
     Object.entries(desiredata).forEach(([key, value]) => {
-      // For each key-value pair, append a new <p> element with the text showing the pair
-      panel.append("p")
-           .text(`${key}: ${value}`);
+      panel.append("p").text(`${key}: ${value}`);
 
     });
   });
@@ -38,7 +37,7 @@ function buildMetadata(sample) {
 
 // function to build both charts
 function buildCharts(sample) {
-  d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
+  d3.json(url).then((data) => {
 
     // Get the samples field
     let samples = data.samples;
@@ -73,25 +72,43 @@ function buildCharts(sample) {
       },
       showlegend: false,
       height: 600,
-      width: 600
+      width: 1200
     };
 
-    let data = [trace1];
+    let data_trace = [trace1];
 
     // Render the Bubble Chart
-    Plotly.newPlot('bubble',data,layout_bubble);
+    Plotly.newPlot('bubble',data_trace,layout_bubble);
     
     // For the Bar Chart, map the otu_ids to a list of strings for your yticks
-
+    yticks = otu_ids.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse();
 
     // Build a Bar Chart
     // Don't forget to slice and reverse the input data appropriately
+    let x_bar = sample_values.slice(0, 10).reverse();
+    let text_bar = otu_labels.slice(0, 10).reverse();
 
+    let trace = {
+      x: x_bar,
+      y: yticks,
+      text: text_bar,
+      type: "bar",
+      orientation: "h"
+    };
 
-    // Render the Bar Chart
+    let dataBar = [trace];
 
+    let layout = {
+      title: "Top 10 OTUs Found",
+      margin: { t: 30, l: 150 }
+    };
+
+    // Render the plot to the div with id "bar"
+    Plotly.newPlot("bar", dataBar, layout);
   });
 }
+
+ 
 
 // Function to run on page load
 function init() {
@@ -106,12 +123,16 @@ function init() {
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
     // option for each sample name.
-
+    names.forEach(name => {
+      dropdown.append('option').text(name).property('value',name)
+    });
 
     // Get the first sample from the list
-
+    let sample1 = names[0];
 
     // Build charts and metadata panel with the first sample
+    buildCharts(sample1);
+    buildMetadata(sample1);
 
   });
 }
@@ -119,7 +140,8 @@ function init() {
 // Function for event listener
 function optionChanged(newSample) {
   // Build charts and metadata panel each time a new sample is selected
-
+  buildCharts(newSample);
+  buildMetadata(newSample);
 }
 
 // Initialize the dashboard
